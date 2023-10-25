@@ -369,7 +369,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
         }
 
         // Create the parameters for the SetupIntent
-        let setupIntentParams = SCPSetupIntentParameters()
+        let setupIntentParams = SetupIntentParameters()
 
         // Set parameters on the setupIntentParams as needed
         // e.g.
