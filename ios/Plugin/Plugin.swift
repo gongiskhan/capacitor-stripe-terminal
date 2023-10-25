@@ -395,7 +395,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             return
         }
 
-        Terminal.shared.collectSetupIntentPaymentMethod(customerConsentCollected: customerConsent) { result in
+        Terminal.shared.collectSetupIntentPaymentMethod(setupIntent: intent, customerConsentCollected: customerConsent) { result in
             switch result {
             case .success(let response):
                 // Serialize the SetupIntent to send it back to JavaScript.
