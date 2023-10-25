@@ -368,12 +368,16 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             return
         }
 
-        // Create the parameters for the SetupIntent
-        let setupIntentParams = SetupIntentParameters()
+        guard let customerId = call.getString("customerId") else {
+            call.reject("Must provide a customerId")
+            return
+        }
 
-        // Set parameters on the setupIntentParams as needed
+        // Create the parameters for the SetupIntent using the provided customer ID
+        let setupIntentParams = SCPSetupIntentParameters(customer: customerId)
+
+        // Set other parameters on the setupIntentParams as needed
         // e.g.
-        // setupIntentParams.customer = "cus_someId"
         // setupIntentParams.stripeDescription = "Description for the setup intent"
         // setupIntentParams.metadata = ["key": "value"]
         // setupIntentParams.usage = .onSession // or .offSession based on your need
