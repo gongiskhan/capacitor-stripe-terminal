@@ -1045,9 +1045,9 @@ export interface StripeTerminalInterface {
     clientSecret: string
   }): Promise<{ intent: PaymentIntent | null }>
 
-  retrieveSetupIntent(options: {
-    clientSecret: string
-  }): Promise<{ setupIntent: SetupIntent | null }>
+  // retrieveSetupIntent(options: {
+  //   clientSecret: string
+  // }): Promise<{ setupIntent: SetupIntent | null }>
 
   collectSetupIntentPaymentMethod(options: {
     clientSecret: string

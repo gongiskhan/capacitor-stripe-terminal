@@ -335,27 +335,27 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
         _ = semaphore.wait(timeout: .now() + 10)
     }
 
-    @objc func retrieveSetupIntent(_ call: CAPPluginCall) {
-        guard let clientSecret = call.getString("clientSecret") else {
-            call.reject("Must provide a clientSecret")
-            return
-        }
-
-        let semaphore = DispatchSemaphore(value: 0)
-        thread.async {
-            Terminal.shared.retrieveSetupIntent() { retrieveResult, retrieveError in
-                self.currentSetupIntent = retrieveResult
-
-                if let error = retrieveError {
-                    call.reject(error.localizedDescription, nil, error)
-                } else if let setupIntent = retrieveResult {
-                    call.resolve(["intent": StripeTerminalUtils.serializeSetupIntent(intent: setupIntent)])
-                }
-                semaphore.signal()
-            }
-        }
-        _ = semaphore.wait(timeout: .now() + 10)
-    }
+//    @objc func retrieveSetupIntent(_ call: CAPPluginCall) {
+//        guard let clientSecret = call.getString("clientSecret") else {
+//            call.reject("Must provide a clientSecret")
+//            return
+//        }
+//
+//        let semaphore = DispatchSemaphore(value: 0)
+//        thread.async {
+//            Terminal.shared.retrieveSetupIntent() { retrieveResult, retrieveError in
+//                self.currentSetupIntent = retrieveResult
+//
+//                if let error = retrieveError {
+//                    call.reject(error.localizedDescription, nil, error)
+//                } else if let setupIntent = retrieveResult {
+//                    call.resolve(["intent": StripeTerminalUtils.serializeSetupIntent(intent: setupIntent)])
+//                }
+//                semaphore.signal()
+//            }
+//        }
+//        _ = semaphore.wait(timeout: .now() + 10)
+//    }
 
     @objc func collectSetupIntentPaymentMethod(_ call: CAPPluginCall) {
         guard let setupIntentSecret = call.getString("setupIntentSecret") else {
