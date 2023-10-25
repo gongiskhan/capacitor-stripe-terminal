@@ -15,6 +15,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
     private var pendingReaderAutoReconnect: Cancelable?
     private var currentUpdate: ReaderSoftwareUpdate?
     private var currentPaymentIntent: PaymentIntent?
+    private var currentSetupIntent: SetupIntent?
     private var cancelDiscoverReadersCall: CAPPluginCall?
     private var isInitialized: Bool = false
     private var thread = DispatchQueue.init(label: "CapacitorStripeTerminal")
@@ -327,6 +328,28 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
                     call.reject(error.localizedDescription, nil, error)
                 } else if let paymentIntent = retrieveResult {
                     call.resolve(["intent": StripeTerminalUtils.serializePaymentIntent(intent: paymentIntent)])
+                }
+                semaphore.signal()
+            }
+        }
+        _ = semaphore.wait(timeout: .now() + 10)
+    }
+
+    @objc func retrieveSetupIntent(_ call: CAPPluginCall) {
+        guard let clientSecret = call.getString("clientSecret") else {
+            call.reject("Must provide a clientSecret")
+            return
+        }
+
+        let semaphore = DispatchSemaphore(value: 0)
+        thread.async {
+            Terminal.shared.retrieveSetupIntent(clientSecret: clientSecret) { retrieveResult, retrieveError in
+                self.currentSetupIntent = retrieveResult
+
+                if let error = retrieveError {
+                    call.reject(error.localizedDescription, nil, error)
+                } else if let setupIntent = retrieveResult {
+                    call.resolve(["intent": StripeTerminalUtils.serializeSetupIntent(intent: setupIntent)])
                 }
                 semaphore.signal()
             }
