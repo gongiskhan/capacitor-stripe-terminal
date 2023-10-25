@@ -373,17 +373,8 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
         return
     }
 
-    // Create the parameters for the SetupIntent using the provided customer ID
     let setupIntentParams = SetupIntentParameters(customer: customerId)
 
-    // Set other parameters on the setupIntentParams as needed
-    // e.g.
-    // setupIntentParams.stripeDescription = "Description for the setup intent"
-    // setupIntentParams.metadata = ["key": "value"]
-    // setupIntentParams.usage = .onSession // or .offSession based on your need
-    // setupIntentParams.onBehalfOf = "another_account_id"
-
-    // Create the SetupIntent using the provided parameters
     Terminal.shared.createSetupIntent(setupIntentParams, completion: { (setupIntent, error) in
         if let error = error {
             call.reject(error.localizedDescription, nil, error)
@@ -395,19 +386,23 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             return
         }
 
-        Terminal.shared.collectSetupIntentPaymentMethod(intent, customerConsentCollected: customerConsent) { result in
-            switch result {
-            case .success(let response):
-                // Serialize the SetupIntent to send it back to JavaScript.
-                let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: response.setupIntent)
-                call.resolve(["intent": serializedSetupIntent])
-
-            case .failure(let error):
+        Terminal.shared.collectSetupIntentPaymentMethod(intent, customerConsentCollected: customerConsent) { (possibleIntent, possibleError) in
+            if let error = possibleError {
                 call.reject(error.localizedDescription, nil, error)
+                return
             }
+
+            guard let finalizedIntent = possibleIntent else {
+                call.reject("No SetupIntent received")
+                return
+            }
+
+            let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: finalizedIntent)
+            call.resolve(["intent": serializedSetupIntent])
         }
     })
 }
+
 
     @objc func cancelCollectPaymentMethod(_ call: CAPPluginCall? = nil) {
         if let cancelable = pendingCollectPaymentMethod {
