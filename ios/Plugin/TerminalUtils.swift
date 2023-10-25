@@ -75,7 +75,7 @@ public class StripeTerminalUtils {
         return jsonObject
     }
 
-    static func serializeSetupIntent(intent: SCPSetupIntent) -> [String: Any] {
+    static func serializeSetupIntent(intent: SetupIntent) -> [String: Any] {
         var jsonObject: [String: Any] = [
             "stripeId": intent.stripeId,
             "created": intent.created.timeIntervalSince1970,
