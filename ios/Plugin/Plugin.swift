@@ -395,11 +395,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             return
         }
 
-        // Accessing clientSecret or other properties might need adjustments.
-        // For the sake of example, I'm assuming we have the clientSecret available.
-        let clientSecret = intent.clientSecret // <-- Update this line based on correct access method
-
-        Terminal.shared.collectSetupIntentPaymentMethod(clientSecret: clientSecret, customerConsentCollected: customerConsent) { result in
+        Terminal.shared.collectSetupIntentPaymentMethod(customerConsentCollected: customerConsent) { result in
             switch result {
             case .success(let response):
                 // Serialize the SetupIntent to send it back to JavaScript.
