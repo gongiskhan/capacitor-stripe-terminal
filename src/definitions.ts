@@ -652,6 +652,108 @@ export interface PaymentIntent {
   statementDescriptorSuffix?: string
 }
 
+export enum SetupIntentStatus {
+  /**
+   * The setup intent has been canceled.
+   */
+  Canceled = 'canceled',
+
+  /**
+   * The setup intent requires a PaymentMethod.
+   */
+  RequiresPaymentMethod = 'requires_payment_method',
+
+  /**
+   * The setup intent requires confirmation before the SetupIntent can be completed successfully.
+   */
+  RequiresConfirmation = 'requires_confirmation',
+
+  /**
+   * The setup intent requires a setup step.
+   * This is the next step when a SetupIntent returns `RequiresAction`.
+   */
+  RequiresAction = 'requires_action',
+
+  /**
+   * The setup intent has succeeded.
+   */
+  Succeeded = 'succeeded',
+
+  /**
+   * The setup intent has started but is not yet in one of the completed states (Succeeded or Canceled).
+   */
+  Processing = 'processing'
+}
+
+export interface SetupIntent {
+  /**
+   * The unique identifier for the intent.
+   */
+  stripeId: string
+
+  /**
+   * When the intent was created.
+   */
+  created: number
+
+  /**
+   * The status of the SetupIntent.
+   */
+  status: SetupIntentStatus // You would need to define this enum based on possible setup intent statuses
+
+  /**
+   * The client secret of the SetupIntent.
+   */
+  clientSecret: string
+
+  /**
+   * The currency of the payment.
+   */
+  currency: string
+
+  /**
+   * Set of key-value pairs attached to the object.
+   *
+   * @see https://stripe.com/docs/api#metadata
+   */
+  metadata: { [key: string]: string }
+
+  /**
+   * The payment method to be used in this `SetupIntent`.
+   */
+  paymentMethod: Stripe.PaymentMethod | string | null
+
+  /**
+   * Indicates the usage of the payment method.
+   */
+  usage: 'off_session' | 'on_session'
+
+  /**
+   * The id of the customer for this SetupIntent.
+   */
+  customer?: string
+
+  /**
+   * A description of the setup intent.
+   */
+  description?: string
+
+  /**
+   * The payment method types supported by this setup intent.
+   */
+  paymentMethodTypes: string[]
+
+  /**
+   * The error encountered in the previous SetupIntent confirmation.
+   */
+  lastSetupError?: Error // You might need to define a type or interface for the Error
+
+  /**
+   * The next step for setup intent completion.
+   */
+  nextAction?: any // You might want to provide a more specific type or interface for this
+}
+
 /**
  * An `Cart` object contains information about what line items are included in the current transaction. A cart object should be created and then passed into `setReaderDisplay()`, which will display the cart's contents on the reader's screen.
  *
@@ -942,6 +1044,15 @@ export interface StripeTerminalInterface {
   retrievePaymentIntent(options: {
     clientSecret: string
   }): Promise<{ intent: PaymentIntent | null }>
+
+  retrieveSetupIntent(options: {
+    clientSecret: string
+  }): Promise<{ setupIntent: SetupIntent | null }>
+
+  collectSetupIntentPaymentMethod(options: {
+    clientSecret: string
+    customerConsentCollected: boolean
+  }): Promise<{ setupIntent: any }>
 
   collectPaymentMethod(configOverride?: CollectConfig): Promise<{
     intent: PaymentIntent

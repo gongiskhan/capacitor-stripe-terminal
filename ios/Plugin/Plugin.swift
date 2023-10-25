@@ -334,6 +334,30 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
         _ = semaphore.wait(timeout: .now() + 10)
     }
 
+    @objc func collectSetupIntentPaymentMethod(_ call: CAPPluginCall) {
+        guard let setupIntentSecret = call.getString("setupIntentSecret") else {
+            call.reject("Must provide a setupIntentSecret")
+            return
+        }
+
+        guard let customerConsent = call.getBool("customerConsentCollected") else {
+            call.reject("Must provide a customerConsentCollected flag")
+            return
+        }
+
+        Terminal.shared.collectSetupIntentPaymentMethod(clientSecret: setupIntentSecret, customerConsentCollected: customerConsent) { result in
+            switch result {
+            case .success(let response):
+                // Serialize the SetupIntent to send it back to JavaScript.
+                let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: response.setupIntent)
+                call.resolve(["intent": serializedSetupIntent])
+
+            case .failure(let error):
+                call.reject(error.localizedDescription, nil, error)
+            }
+        }
+    }
+
     @objc func cancelCollectPaymentMethod(_ call: CAPPluginCall? = nil) {
         if let cancelable = pendingCollectPaymentMethod {
             cancelable.cancel { error in

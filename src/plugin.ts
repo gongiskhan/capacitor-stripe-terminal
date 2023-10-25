@@ -27,7 +27,8 @@ import {
   DeviceStyle,
   PermissionStatus,
   ReaderSoftwareUpdate,
-  CollectConfig
+  CollectConfig,
+  SetupIntent
 } from './definitions'
 
 import { StripeTerminal } from './plugin-registration'
@@ -423,6 +424,29 @@ export class StripeTerminalPlugin {
     return paymentIntent
   }
 
+  private normalizeSetupIntent(setupIntent: any): SetupIntent | null {
+    if (!setupIntent) return null
+
+    // Adjusting for SetupIntent attributes
+    if (setupIntent.metadata && typeof setupIntent.metadata === 'string') {
+      setupIntent.metadata = this.parseJson(setupIntent.metadata)
+    }
+
+    // Based on the SCPSetupIntent attributes, PaymentMethod is relevant here too.
+    if (
+      setupIntent.paymentMethod &&
+      typeof setupIntent.paymentMethod === 'string' &&
+      !setupIntent.paymentMethod.startsWith('pm_') // if its just the ID, return the ID
+    ) {
+      setupIntent.paymentMethod = this.parseJson(setupIntent.paymentMethod)
+    }
+
+    // The charges attribute is not directly related to SetupIntent as it was with PaymentIntent.
+    // If there's any other nested attribute you want to normalize, you can add a similar block for that.
+
+    return setupIntent
+  }
+
   public discoverReaders(
     options: DiscoveryConfiguration
   ): Observable<Reader[]> {
@@ -792,6 +816,31 @@ export class StripeTerminalPlugin {
     const data = await this.sdk.retrievePaymentIntent({ clientSecret })
 
     const pi = this.objectExists(data?.intent)
+
+    return this.normalizePaymentIntent(pi)
+  }
+
+  public async retrievePaymentIntent(
+    clientSecret: string
+  ): Promise<SetupIntent | null> {
+    this.ensureInitialized()
+
+    const data = await this.sdk.retrieveSetupIntent({ clientSecret })
+
+    const pi = this.objectExists(data?.setupIntent)
+
+    return this.normalizeSetupIntent(pi)
+  }
+
+  public async collectSetupIntentPaymentMethod(options: {
+    clientSecret: string
+    customerConsentCollected: boolean
+  }): Promise<any> {
+    this.ensureInitialized()
+
+    const data = await this.sdk.collectSetupIntentPaymentMethod(options)
+
+    const pi = this.objectExists(data?.setupIntent)
 
     return this.normalizePaymentIntent(pi)
   }

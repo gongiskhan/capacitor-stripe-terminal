@@ -63,12 +63,30 @@ public class StripeTerminalUtils {
             "charges": chargesJson,
             "metadata": intent.metadata as Any,
         ]
-        
+
         if let amountDetails = intent.amountDetails {
             jsonObject["amountDetails"] = amountDetails.originalJSON
         }
 
         if let paymentMethod = intent.paymentMethod {
+            jsonObject["paymentMethod"] = paymentMethod.originalJSON
+        }
+
+        return jsonObject
+    }
+
+    static func serializeSetupIntent(intent: SCPSetupIntent) -> [String: Any] {
+        var jsonObject: [String: Any] = [
+            "stripeId": intent.stripeId,
+            "created": intent.created.timeIntervalSince1970,
+            "status": intent.status.rawValue,
+            "usage": intent.usage.rawValue,
+            "clientSecret": intent.clientSecret,
+            "metadata": intent.metadata,
+        ]
+
+        // Assuming the SetupIntent has a property for associated PaymentMethod details
+        if let paymentMethodDetails = intent.paymentMethod {
             jsonObject["paymentMethod"] = paymentMethod.originalJSON
         }
 
@@ -102,16 +120,16 @@ public class StripeTerminalUtils {
 
         return jsonObject
     }
-    
+
     static func serializeSimulatorConfiguration(simulatorConfig: SimulatorConfiguration) -> [String: Any] {
         let jsonObject: [String: Any] = [
             "availableReaderUpdate": simulatorConfig.availableReaderUpdate.rawValue,
             "simulatedCard": "\(simulatorConfig.simulatedCard)" as Any,
         ]
-                
+
         return jsonObject
     }
-    
+
     static func translateDiscoveryMethod(method: UInt) -> DiscoveryMethod {
         if (method == 0) {
             return DiscoveryMethod.bluetoothScan

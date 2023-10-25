@@ -18,7 +18,8 @@ import {
   SimulatorConfiguration,
   PermissionStatus,
   Cart,
-  CollectConfig
+  CollectConfig,
+  SetupIntent
 } from './definitions'
 import {
   loadStripeTerminal,
@@ -695,5 +696,21 @@ export class StripeTerminalWeb
   async cancelAutoReconnect(): Promise<void> {
     // no equivalent
     console.warn('cancelAutoReconnect is only available for Bluetooth readers.')
+  }
+
+  collectSetupIntentPaymentMethod(options: {
+    clientSecret: string
+    customerConsentCollected: boolean
+  }): Promise<{
+    setupIntent: any
+  }> {
+    return Promise.resolve({ setupIntent: options })
+  }
+
+  retrieveSetupIntent(options: {
+    clientSecret: string
+  }): Promise<{ setupIntent: SetupIntent | null }> {
+    console.log('Called retrieveSetupIntent on Web. Not Implemented!', options)
+    return Promise.resolve({ setupIntent: null })
   }
 }
