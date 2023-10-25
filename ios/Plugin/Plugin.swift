@@ -368,8 +368,19 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             return
         }
 
-        // Create the SetupIntent first
-        Terminal.shared.createSetupIntent(completion: { (setupIntent, error) in
+        // Create the parameters for the SetupIntent
+        let setupIntentParams = SCPSetupIntentParameters()
+
+        // Set parameters on the setupIntentParams as needed
+        // e.g.
+        // setupIntentParams.customer = "cus_someId"
+        // setupIntentParams.stripeDescription = "Description for the setup intent"
+        // setupIntentParams.metadata = ["key": "value"]
+        // setupIntentParams.usage = .onSession // or .offSession based on your need
+        // setupIntentParams.onBehalfOf = "another_account_id"
+
+        // Create the SetupIntent using the provided parameters
+        Terminal.shared.createSetupIntent(setupIntentParams, completion: { (setupIntent, error) in
             if let error = error {
                 call.reject(error.localizedDescription, nil, error)
                 return
