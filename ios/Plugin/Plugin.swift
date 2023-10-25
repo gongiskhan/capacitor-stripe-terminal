@@ -99,12 +99,12 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             locationId: locationId,
             simulated: simulated
         )
-        
+
         guard pendingDiscoverReaders == nil else {
             call.reject("discoverReaders is busy")
             return
         }
-                
+
         self.pendingDiscoverReaders = Terminal.shared.discoverReaders(config, delegate: self) { error in
             if let error = error {
                 call.reject(error.localizedDescription, nil, error)
@@ -125,7 +125,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             call?.resolve()
             return
         }
-        
+
         cancelable.cancel() { error in
             if let error = error as NSError? {
                 call?.reject(error.localizedDescription, nil, error)
@@ -135,7 +135,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
                 self.cancelDiscoverReadersCall = call
             }
         }
-        
+
     }
 
     @objc func connectBluetoothReader(_ call: CAPPluginCall) {
@@ -224,7 +224,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             call.reject("No reader found")
             return
         }
-        
+
         let onBehalfOf = call.getString("onBehalfOf")
         let merchantDisplayName = call.getString("merchantDisplayName")
         let tosAcceptancePermitted = call.getBool("tosAcceptancePermitted", false)
@@ -353,7 +353,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 
     @objc func collectPaymentMethod(_ call: CAPPluginCall) {
         let updatePaymentIntent = call.getBool("updatePaymentIntent", false)
-
+print("collectPaymentMethod in swift")
         let collectConfig = CollectConfiguration(updatePaymentIntent: updatePaymentIntent)
 
         if let intent = currentPaymentIntent {
@@ -459,7 +459,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
                                              endingBefore: endingBefore,
                                              startingAfter: startingAfter)
         }
-        
+
         let semaphore = DispatchSemaphore(value: 0)
         thread.async {
             Terminal.shared.listLocations(parameters: params) { locations, hasMore, error in
@@ -508,7 +508,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 
         return getSimulatorConfiguration(call)
     }
-    
+
     @objc func cancelAutoReconnect(_ call: CAPPluginCall) {
         if let cancelable = pendingReaderAutoReconnect {
             cancelable.cancel { error in
@@ -587,7 +587,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
     public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         notifyListeners("didRequestReaderDisplayMessage", data: ["value": displayMessage.rawValue])
     }
-        
+
     // MARK: LocalMobileReaderDelegate
 
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
@@ -608,7 +608,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
             currentUpdate = nil
         }
     }
-    
+
     public func localMobileReader(_: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
         notifyListeners("didRequestReaderInput", data: ["value": inputOptions.rawValue])
     }
@@ -616,7 +616,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
     public func localMobileReader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         notifyListeners("didRequestReaderDisplayMessage", data: ["value": displayMessage.rawValue])
     }
-    
+
     public func localMobileReaderDidAcceptTermsOfService(_: Reader) {
         notifyListeners("localMobileReaderDidAcceptTermsOfService", data: nil)
     }

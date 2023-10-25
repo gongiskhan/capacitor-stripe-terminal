@@ -25,9 +25,9 @@ _These instructions are for v2 which is currently in beta. See the [`v1-support`
 
 ## Maintainers
 
-| Maintainer | GitHub                              | Social                                      |
-| ---------- | ----------------------------------- | ------------------------------------------- |
-| Noah Prail | [nprail](https://github.com/nprail) | [@NoahPrail](https://twitter.com/NoahPrail) |
+| Maintainer    | GitHub                                      | Social                                      |
+| ------------- | ------------------------------------------- | ------------------------------------------- |
+| Goncalo Gomes | [gongiskhan](https://github.com/gongiskhan) | [@goncalo82](https://twitter.com/goncalo82) |
 
 ## Installation
 

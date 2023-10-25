@@ -482,7 +482,11 @@ export class StripeTerminalWeb
     collectConfig?: CollectConfig
   ): Promise<{ intent: PaymentIntent }> {
     const sdk = this.ensureInitialized()
-
+    console.log(
+      'collectPaymentMethod web',
+      this.currentClientSecret,
+      collectConfig
+    )
     if (!this.currentClientSecret) {
       throw new Error(
         'No `clientSecret` was found. Make sure to run `retrievePaymentIntent` before running this method.'
