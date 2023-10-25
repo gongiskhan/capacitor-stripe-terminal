@@ -820,7 +820,7 @@ export class StripeTerminalPlugin {
     return this.normalizePaymentIntent(pi)
   }
 
-  public async retrievePaymentIntent(
+  public async retrieveSetupIntent(
     clientSecret: string
   ): Promise<SetupIntent | null> {
     this.ensureInitialized()
