@@ -80,14 +80,41 @@ public class StripeTerminalUtils {
             "stripeId": intent.stripeId,
             "created": intent.created.timeIntervalSince1970,
             "status": intent.status.rawValue,
-            "usage": intent.usage.rawValue,
             "clientSecret": intent.clientSecret,
+            "currency": intent.currency,
             "metadata": intent.metadata,
+            "usage": intent.usage.rawValue,
+            "paymentMethodTypes": intent.paymentMethodTypes,
         ]
 
-        // Assuming the SetupIntent has a property for associated PaymentMethod details
+        // Handle optional properties
         if let paymentMethodDetails = intent.paymentMethod {
-            jsonObject["paymentMethod"] = paymentMethod.originalJSON
+            switch paymentMethodDetails {
+            case let method as String:
+                jsonObject["paymentMethod"] = method
+            case let method as PaymentMethod: // Assuming there's a PaymentMethod class or struct
+                jsonObject["paymentMethod"] = method.originalJSON
+            default:
+                break
+            }
+        }
+
+        if let customer = intent.customer {
+            jsonObject["customer"] = customer
+        }
+
+        if let description = intent.description {
+            jsonObject["description"] = description
+        }
+
+        if let lastSetupError = intent.lastSetupError {
+            // You would need to determine how to serialize the Error, e.g., using a function
+            jsonObject["lastSetupError"] = serializeError(lastSetupError)
+        }
+
+        if let nextAction = intent.nextAction {
+            // You might want to serialize nextAction as well, depending on its structure
+            jsonObject["nextAction"] = nextAction // or serializeNextAction(nextAction)
         }
 
         return jsonObject
