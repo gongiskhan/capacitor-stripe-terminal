@@ -343,7 +343,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 
         let semaphore = DispatchSemaphore(value: 0)
         thread.async {
-            Terminal.shared.retrieveSetupIntent(clientSecret: clientSecret) { retrieveResult, retrieveError in
+            Terminal.shared.retrieveSetupIntent() { retrieveResult, retrieveError in
                 self.currentSetupIntent = retrieveResult
 
                 if let error = retrieveError {
