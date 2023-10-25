@@ -75,46 +75,24 @@ public class StripeTerminalUtils {
         return jsonObject
     }
 
-    static func serializeSetupIntent(intent: SetupIntent) -> [String: Any] {
+    static func serializeSetupIntent(intent: SCPSetupIntent) -> [String: Any] {
         var jsonObject: [String: Any] = [
             "stripeId": intent.stripeId,
             "created": intent.created.timeIntervalSince1970,
             "status": intent.status.rawValue,
-            "clientSecret": intent.clientSecret,
-            "currency": intent.currency,
-            "metadata": intent.metadata,
             "usage": intent.usage.rawValue,
-            "paymentMethodTypes": intent.paymentMethodTypes,
+            "metadata": intent.metadata as Any
         ]
 
         // Handle optional properties
-        if let paymentMethodDetails = intent.paymentMethod {
-            switch paymentMethodDetails {
-            case let method as String:
-                jsonObject["paymentMethod"] = method
-            case let method as PaymentMethod: // Assuming there's a PaymentMethod class or struct
-                jsonObject["paymentMethod"] = method.originalJSON
-            default:
-                break
-            }
-        }
-
         if let customer = intent.customer {
             jsonObject["customer"] = customer
         }
 
-        if let description = intent.description {
-            jsonObject["description"] = description
-        }
-
-        if let lastSetupError = intent.lastSetupError {
-            // You would need to determine how to serialize the Error, e.g., using a function
-            jsonObject["lastSetupError"] = serializeError(lastSetupError)
-        }
-
-        if let nextAction = intent.nextAction {
-            // You might want to serialize nextAction as well, depending on its structure
-            jsonObject["nextAction"] = nextAction // or serializeNextAction(nextAction)
+        if let latestAttempt = intent.latestAttempt {
+            // Assuming SCPSetupAttempt can be serialized to a dictionary
+            // or it has a similar `originalJSON` property.
+            jsonObject["latestAttempt"] = latestAttempt.originalJSON
         }
 
         return jsonObject
