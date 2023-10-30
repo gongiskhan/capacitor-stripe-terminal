@@ -358,45 +358,46 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 //    }
 
 @objc func collectSetupIntentPaymentMethod(_ call: CAPPluginCall) {
+    printf(0)
     guard let setupIntentSecret = call.getString("setupIntentSecret") else {
         call.reject("Must provide a setupIntentSecret")
         return
     }
-
+printf(1)
     guard let customerConsent = call.getBool("customerConsentCollected") else {
         call.reject("Must provide a customerConsentCollected flag")
         return
     }
-
+printf(2)
     guard let customerId = call.getString("customerId") else {
         call.reject("Must provide a customerId")
         return
     }
-
+printf(3)
     let setupIntentParams = SetupIntentParameters(customer: customerId)
-
+printf(4, setupIntentParams)
     Terminal.shared.createSetupIntent(setupIntentParams, completion: { (setupIntent, error) in
         if let error = error {
             call.reject(error.localizedDescription, nil, error)
             return
         }
-
+printf(5, setupIntent)
         guard let intent = setupIntent else {
             call.reject("Failed to create SetupIntent")
             return
         }
-
+printf(6, intent)
         Terminal.shared.collectSetupIntentPaymentMethod(intent, customerConsentCollected: customerConsent) { (possibleIntent, possibleError) in
             if let error = possibleError {
                 call.reject(error.localizedDescription, nil, error)
                 return
             }
-
+printf(7, intent)
             guard let finalizedIntent = possibleIntent else {
                 call.reject("No SetupIntent received")
                 return
             }
-
+printf(8, finalizedIntent)
             let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: finalizedIntent)
             call.resolve(["intent": serializedSetupIntent])
         }
@@ -423,7 +424,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 
     @objc func collectPaymentMethod(_ call: CAPPluginCall) {
         let updatePaymentIntent = call.getBool("updatePaymentIntent", false)
-print("collectPaymentMethod in swift")
+        print("collectPaymentMethod in swift")
         let collectConfig = CollectConfiguration(updatePaymentIntent: updatePaymentIntent)
 
         if let intent = currentPaymentIntent {
