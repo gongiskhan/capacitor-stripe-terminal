@@ -701,6 +701,7 @@ export class StripeTerminalWeb
   collectSetupIntentPaymentMethod(options: {
     clientSecret: string
     customerConsentCollected: boolean
+    customerId: string
   }): Promise<{
     setupIntent: any
   }> {

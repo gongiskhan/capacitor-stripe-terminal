@@ -358,8 +358,8 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 //    }
 
 @objc func collectSetupIntentPaymentMethod(_ call: CAPPluginCall) {
-    guard let setupIntentSecret = call.getString("setupIntentSecret") else {
-        call.reject("Must provide a setupIntentSecret")
+    guard let setupIntentSecret = call.getString("clientSecret") else {
+        call.reject("Must provide a clientSecret")
         return
     }
 

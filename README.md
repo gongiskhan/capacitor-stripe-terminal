@@ -158,7 +158,7 @@ const inputSubscription = terminal
 await terminal.retrievePaymentIntent('your client secret created server side')
 
 // collect the payment method
-await terminal.collectPaymentMethod()
+// await terminal.collectPaymentMethod()
 
 // and finally, process the payment
 await terminal.processPayment()

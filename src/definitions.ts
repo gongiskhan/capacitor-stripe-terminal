@@ -1052,6 +1052,7 @@ export interface StripeTerminalInterface {
   collectSetupIntentPaymentMethod(options: {
     clientSecret: string
     customerConsentCollected: boolean
+    customerId: string
   }): Promise<{ setupIntent: any }>
 
   collectPaymentMethod(configOverride?: CollectConfig): Promise<{
