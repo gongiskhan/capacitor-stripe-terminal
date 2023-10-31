@@ -357,6 +357,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 //        _ = semaphore.wait(timeout: .now() + 10)
 //    }
 
+
 @objc func collectSetupIntentPaymentMethod(_ call: CAPPluginCall) {
 //    guard let setupIntentSecret = call.getString("clientSecret") else {
 //        call.reject("Must provide a clientSecret")
@@ -369,7 +370,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
     }
 
     guard let intentData = intentJson.data(using: .utf8),
-      let intent = try? JSONDecoder().decode(SetupIntent.self, from: intentData) else {
+      let intent = try? JSONDecoder().decode(SCPSetupIntent.self, from: intentData) else {
         call.reject("Failed to decode intent data")
         return
     }
