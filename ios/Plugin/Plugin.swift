@@ -392,9 +392,27 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
                 return
             }
 
-            // Serialize your finalized SetupIntent as needed, perhaps using a utility function you define
-            let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: finalizedIntent)
-            call.resolve(["setupIntent": serializedSetupIntent])
+           Terminal.shared.confirmSetupIntent(setupIntent) { (confirmedSetupIntent, confirmError) in
+                if let confirmError = confirmError {
+                    call.reject(confirmError.localizedDescription, nil, confirmError)
+                    return
+                }
+
+                guard let confirmedSetupIntent = confirmedSetupIntent else {
+                    call.reject("No confirmed SetupIntent received")
+                    return
+                }
+
+                // Serialize the confirmed SetupIntent for the response
+//                let serializedConfirmedSetupIntent = self?.serializeSetupIntentForResponse(confirmedSetupIntent)
+//                call.resolve(["intent": serializedConfirmedSetupIntent ?? ""])
+
+              // Serialize your finalized SetupIntent as needed, perhaps using a utility function you define
+              let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: confirmedSetupIntent)
+              call.resolve(["setupIntent": serializedSetupIntent])
+            }
+
+
         }
     }
 }
