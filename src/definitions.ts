@@ -1056,7 +1056,7 @@ export interface StripeTerminalInterface {
   // }): Promise<{ setupIntent: any }>
 
   collectSetupIntentPaymentMethod(options: {
-    setupIntent: string
+    clientSecret: string
     customerConsentCollected: boolean
   }): Promise<{ setupIntent: any }>
 

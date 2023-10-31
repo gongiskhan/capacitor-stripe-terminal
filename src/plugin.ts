@@ -847,7 +847,7 @@ export class StripeTerminalPlugin {
   // }
 
   public async collectSetupIntentPaymentMethod(options: {
-    setupIntent: string
+    clientSecret: string
     customerConsentCollected: boolean
   }): Promise<any> {
     this.ensureInitialized()

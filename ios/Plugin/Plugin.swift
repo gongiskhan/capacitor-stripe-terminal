@@ -357,21 +357,9 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 //        _ = semaphore.wait(timeout: .now() + 10)
 //    }
 
-
 @objc func collectSetupIntentPaymentMethod(_ call: CAPPluginCall) {
-//    guard let setupIntentSecret = call.getString("clientSecret") else {
-//        call.reject("Must provide a clientSecret")
-//        return
-//    }
-
-    guard let intentJson = call.getString("setupIntent") else {
-        call.reject("Must provide setupIntent")
-        return
-    }
-
-    guard let intentData = intentJson.data(using: .utf8),
-      let intent = try? JSONDecoder().decode(SCPSetupIntent.self, from: intentData) else {
-        call.reject("Failed to decode intent data")
+    guard let setupIntentSecret = call.getString("clientSecret") else {
+        call.reject("Must provide a clientSecret")
         return
     }
 
@@ -380,21 +368,74 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
         return
     }
 
-    Terminal.shared.collectSetupIntentPaymentMethod(intent, customerConsentCollected: customerConsent) { (possibleIntent, possibleError) in
-        if let error = possibleError {
-            call.reject(error.localizedDescription, nil, error)
+    // Fetch the SetupIntent from Stripe using the client secret
+    Terminal.shared.retrieveSetupIntent(clientSecret: setupIntentSecret) { (setupIntent, error) in
+        if let error = error {
+            call.reject("Failed to retrieve SetupIntent: \(error.localizedDescription)", nil, error)
             return
         }
 
-        guard let finalizedIntent = possibleIntent else {
-            call.reject("No SetupIntent received")
+        guard let setupIntent = setupIntent else {
+            call.reject("SetupIntent could not be retrieved")
             return
         }
 
-        let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: finalizedIntent)
-        call.resolve(["intent": serializedSetupIntent])
+        // Now that you have the SetupIntent, collect the payment method
+        Terminal.shared.collectSetupIntentPaymentMethod(setupIntent, customerConsentCollected: customerConsent) { (collectedSetupIntent, collectError) in
+            if let collectError = collectError {
+                call.reject(collectError.localizedDescription, nil, collectError)
+                return
+            }
+
+            guard let finalizedIntent = collectedSetupIntent else {
+                call.reject("No SetupIntent received after collection")
+                return
+            }
+
+            // Serialize your finalized SetupIntent as needed, perhaps using a utility function you define
+            let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: finalizedIntent)
+            call.resolve(["intent": serializedSetupIntent])
+        }
     }
+}
 
+//@objc func collectSetupIntentPaymentMethod(_ call: CAPPluginCall) {
+////    guard let setupIntentSecret = call.getString("clientSecret") else {
+////        call.reject("Must provide a clientSecret")
+////        return
+////    }
+//
+//    guard let intentJson = call.getString("setupIntent") else {
+//        call.reject("Must provide setupIntent")
+//        return
+//    }
+//
+//    guard let intentData = intentJson.data(using: .utf8),
+//      let intent = try? JSONDecoder().decode(SCPSetupIntent.self, from: intentData) else {
+//        call.reject("Failed to decode intent data")
+//        return
+//    }
+//
+//    guard let customerConsent = call.getBool("customerConsentCollected") else {
+//        call.reject("Must provide a customerConsentCollected flag")
+//        return
+//    }
+//
+//    Terminal.shared.collectSetupIntentPaymentMethod(intent, customerConsentCollected: customerConsent) { (possibleIntent, possibleError) in
+//        if let error = possibleError {
+//            call.reject(error.localizedDescription, nil, error)
+//            return
+//        }
+//
+//        guard let finalizedIntent = possibleIntent else {
+//            call.reject("No SetupIntent received")
+//            return
+//        }
+//
+//        let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: finalizedIntent)
+//        call.resolve(["intent": serializedSetupIntent])
+//    }
+//}
 //    guard let customerId = call.getString("customerId") else {
 //        call.reject("Must provide a customerId")
 //        return
@@ -428,7 +469,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 //            call.resolve(["intent": serializedSetupIntent])
 //        }
 //    })
-}
+//}
 
 
     @objc func cancelCollectPaymentMethod(_ call: CAPPluginCall? = nil) {

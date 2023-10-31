@@ -709,7 +709,7 @@ export class StripeTerminalWeb
   // }
 
   collectSetupIntentPaymentMethod(options: {
-    setupIntent: string
+    clientSecret: string
     customerConsentCollected: boolean
   }): Promise<{
     setupIntent: any
