@@ -714,6 +714,10 @@ export class StripeTerminalWeb
   }): Promise<{
     setupIntent: any
   }> {
+    console.warn(
+      'Called collectSetupIntentPaymentMethod on Web. Not Implemented!',
+      options
+    )
     return Promise.resolve({ setupIntent: options })
   }
 

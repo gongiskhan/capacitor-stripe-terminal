@@ -394,7 +394,7 @@ public class StripeTerminal: CAPPlugin, ConnectionTokenProvider, DiscoveryDelega
 
             // Serialize your finalized SetupIntent as needed, perhaps using a utility function you define
             let serializedSetupIntent = StripeTerminalUtils.serializeSetupIntent(intent: finalizedIntent)
-            call.resolve(["intent": serializedSetupIntent])
+            call.resolve(["setupIntent": serializedSetupIntent])
         }
     }
 }

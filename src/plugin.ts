@@ -851,11 +851,15 @@ export class StripeTerminalPlugin {
     customerConsentCollected: boolean
   }): Promise<any> {
     this.ensureInitialized()
-
+    console.log('collectSetupIntentPaymentMethod', options)
     const data = await this.sdk.collectSetupIntentPaymentMethod(options)
-
+    console.log('collectSetupIntentPaymentMethod data', data)
     const pi = this.objectExists(data?.setupIntent)
-
+    console.log('collectSetupIntentPaymentMethod pi', pi)
+    console.log(
+      'collectSetupIntentPaymentMethod this.normalizePaymentIntent(pi)',
+      this.normalizePaymentIntent(pi)
+    )
     return this.normalizePaymentIntent(pi)
   }
 
