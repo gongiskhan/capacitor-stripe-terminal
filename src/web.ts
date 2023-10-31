@@ -698,10 +698,19 @@ export class StripeTerminalWeb
     console.warn('cancelAutoReconnect is only available for Bluetooth readers.')
   }
 
+  // collectSetupIntentPaymentMethod(options: {
+  //   clientSecret: string
+  //   customerConsentCollected: boolean
+  //   customerId: string
+  // }): Promise<{
+  //   setupIntent: any
+  // }> {
+  //   return Promise.resolve({ setupIntent: options })
+  // }
+
   collectSetupIntentPaymentMethod(options: {
-    clientSecret: string
+    setupIntent: string
     customerConsentCollected: boolean
-    customerId: string
   }): Promise<{
     setupIntent: any
   }> {

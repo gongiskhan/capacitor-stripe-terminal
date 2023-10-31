@@ -832,10 +832,23 @@ export class StripeTerminalPlugin {
   //   return this.normalizeSetupIntent(pi)
   // }
 
+  // public async collectSetupIntentPaymentMethod(options: {
+  //   clientSecret: string
+  //   customerConsentCollected: boolean
+  //   customerId: string
+  // }): Promise<any> {
+  //   this.ensureInitialized()
+  //
+  //   const data = await this.sdk.collectSetupIntentPaymentMethod(options)
+  //
+  //   const pi = this.objectExists(data?.setupIntent)
+  //
+  //   return this.normalizePaymentIntent(pi)
+  // }
+
   public async collectSetupIntentPaymentMethod(options: {
-    clientSecret: string
+    setupIntent: string
     customerConsentCollected: boolean
-    customerId: string
   }): Promise<any> {
     this.ensureInitialized()
 
